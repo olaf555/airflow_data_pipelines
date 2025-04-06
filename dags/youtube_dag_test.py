@@ -37,6 +37,16 @@ def _validate_youtube_data():
     items = data.get("items", [])
     assert len(items) > 0, "No video data found."
 
+def _validate_view_count_range():
+    with open(f"{DAG_FOLDER}/youtube_data.json", "r") as f:
+        data = json.load(f)
+
+    view_count = int(data.get("items")[0].get("statistics", {}).get("viewCount", 0))
+    
+    assert view_count >= 1000, "view_count too low"
+    assert view_count <= 10_000_000, "view_count too high"
+
+
 def _create_youtube_table():
     pg_hook = PostgresHook(postgres_conn_id="youtube_postgres_conn", schema="postgres")
     connection = pg_hook.get_conn()
@@ -95,9 +105,12 @@ with DAG(
 
     get_data = PythonOperator(task_id="get_youtube_data", python_callable=_get_youtube_data)
     validate = PythonOperator(task_id="validate_youtube_data", python_callable=_validate_youtube_data)
+    validate_range = PythonOperator(task_id="validate_view_count_range",python_callable=_validate_view_count_range)
     create_table = PythonOperator(task_id="create_youtube_table", python_callable=_create_youtube_table)
     load_data = PythonOperator(task_id="load_youtube_data_to_postgres", python_callable=_load_youtube_data_to_postgres)
     end = EmptyOperator(task_id="end")
 
-    start >> get_data >> validate >> load_data >> end
+    start >> get_data >> [validate >> validate_range] >> load_data >> end
     start >> create_table >> load_data
+    
+    # start >> get_data >> validate >> validate_range >> load_data >> end
