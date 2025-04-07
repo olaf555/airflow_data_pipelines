@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: view_count
+    description: Show the view count of Cruel Summer
+    columns:
+      - name: channel_title 
+        description: The name of the channel that uploaded the video.
+      - name : title
+        description: The title or name of the video.
+      - name : published_at
+        description: The date and time the video was published.
+      - name : category_id
+        description: The ID representing the category of the video.
+      - name : tags
+        description: Keywords or tags associated with the video.
+      - name : updated_at
+        description: The date and time the video data was last updated.
+        data_tests:
+          - not_null
+      - name : view_count
+        description: The number of times the video has been viewed.(วิว)
+        data_tests:
+          - not_null

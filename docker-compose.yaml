@@ -83,6 +83,7 @@ x-airflow-common:
     - ${AIRFLOW_PROJ_DIR:-.}/config:/opt/airflow/config
     - ${AIRFLOW_PROJ_DIR:-.}/plugins:/opt/airflow/plugins
     - ${AIRFLOW_PROJ_DIR:-.}/weather:/opt/airflow/dbt/weather
+    - ${AIRFLOW_PROJ_DIR:-.}/cruel_summer:/opt/airflow/dbt/cruel_summer
   user: "${AIRFLOW_UID:-50000}:0"
   depends_on:
     &airflow-common-depends-on
